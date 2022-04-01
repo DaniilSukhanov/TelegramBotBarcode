@@ -17,7 +17,6 @@ async def errors_handler(update, exception):
     :return: stdout logging
     """
 
-
     if isinstance(exception, MessageNotModified):
         logging.exception('Message is not modified')
         # do something here?
