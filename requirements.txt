@@ -2,3 +2,4 @@ aiogram<3.0
 environs~=8.0.0
 pyzbar~=0.1.9
 Pillow~=9.0.1
+SQLAlchemy~=1.4.32
