@@ -13,7 +13,7 @@ class Users(SqlAlchemyBase):
     )
     tgu_bot_id = sa.Column(
         'tgu_BotID', sa.Integer,
-        sa.ForeignKey('TLG_Config.tgc_id'),
+        sa.ForeignKey('TLG_Config.tgc_ID'),
         nullable=False
     )
     tgu_login = sa.Column(

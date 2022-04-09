@@ -31,9 +31,9 @@ class DataBase:
             engine.connect()
             cls.__factory = orm.sessionmaker(bind=engine)
 
-            import models
+            from . import models
 
-            SqlAlchemyBase.metadata.create_all(engine)
+            models.SqlAlchemyBase.metadata.create_all(engine)
             logging.info('Database connection was successful.')
         return super().__new__(cls)
 
@@ -42,3 +42,5 @@ class DataBase:
         return self.__factory()
 
 
+if __name__ == '__main__':
+    DataBase()

@@ -20,6 +20,9 @@ class Config(SqlAlchemyBase):
         'tgc_Token', sa.String(50),
         nullable=False
     )
+    tgc_password = sa.Column(
+        'tgc_Password', sa.String(50)
+    )
     tgc_path_photo = sa.Column(
         'tgc_PathPhoto', sa.String(250)
     )
