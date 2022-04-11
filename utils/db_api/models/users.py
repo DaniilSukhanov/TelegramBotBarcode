@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 
+from data import const
 from utils.db_api.db_session import SqlAlchemyBase
 
 
@@ -33,4 +34,8 @@ class Users(SqlAlchemyBase):
     )
     tgu_area = sa.Column(
         'tgu_Area', sa.Text(10)
+    )
+    tgu_user_status = sa.Column(
+        'tgu_UserStatus', sa.Integer,
+        default=const.REGISTERED_USER
     )

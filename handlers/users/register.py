@@ -10,11 +10,14 @@ from states import Register
 from utils.db_api.db_session import DataBase
 from utils.db_api import models
 from keyboards.default import keyboard_getter_contact
+from data import const
+from utils.misc.middleware_status_setters import clearance_level
 
 
 db = DataBase()
 
 
+@clearance_level(const.UNREGISTERED_USER)
 @dp.message_handler(Command('register'))
 async def register(message: types.Message):
     """Ввод пользователя в состояние регистрации."""
@@ -26,6 +29,7 @@ async def register(message: types.Message):
     await Register.phone_number.set()
 
 
+@clearance_level(const.UNREGISTERED_USER)
 @dp.message_handler(
     state=Register.phone_number, content_types=types.ContentType.CONTACT
 )
@@ -46,6 +50,7 @@ async def get_phone_number(message: types.Message, state: FSMContext):
         await message.answer('Это не ваш номер телефона!')
 
 
+@clearance_level(const.UNREGISTERED_USER)
 @dp.message_handler(
     state=Register.password, content_types=types.ContentType.TEXT
 )

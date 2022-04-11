@@ -1,12 +1,14 @@
 import logging
 from aiogram import types
 from aiogram.utils import exceptions
+import PIL
 
 from loader import dp, bot
 from data.decode import decode_image
-import PIL
+from utils.misc import clearance_level
 
 
+@clearance_level()
 @dp.message_handler(content_types=types.ContentType.PHOTO)
 async def decode_photo(message: types.Message):
     """Обработчик декодирования фото со штрих кодом."""
