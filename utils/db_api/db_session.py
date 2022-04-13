@@ -31,7 +31,7 @@ class DataBase:
             engine.connect()
             cls.__factory = orm.sessionmaker(bind=engine)
 
-            from . import models
+            from utils.db_api import models
 
             models.SqlAlchemyBase.metadata.create_all(engine)
             logging.info('Database connection was successful.')

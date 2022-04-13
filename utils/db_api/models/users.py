@@ -12,8 +12,8 @@ class Users(SqlAlchemyBase):
         primary_key=True,
         nullable=False
     )
-    tgu_bot_id = sa.Column(
-        'tgu_BotID', sa.Integer,
+    tgu_bot = sa.Column(
+        'tgu_Bot', sa.Integer,
         sa.ForeignKey('TLG_Config.tgc_ID'),
         nullable=False
     )
@@ -31,9 +31,6 @@ class Users(SqlAlchemyBase):
     )
     tgu_phone = sa.Column(
         'tgu_Phone', sa.Text(50)
-    )
-    tgu_area = sa.Column(
-        'tgu_Area', sa.Text(10)
     )
     tgu_user_status = sa.Column(
         'tgu_UserStatus', sa.Integer,

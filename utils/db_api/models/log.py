@@ -18,19 +18,19 @@ class Log(SqlAlchemyBase):
         default=datetime.datetime.now,
         nullable=False
     )
-    tgl_bot_id = sa.Column(
-        'tgl_BotID', sa.Integer,
+    tgl_bot = sa.Column(
+        'tgl_Bot', sa.Integer,
         sa.ForeignKey('TLG_Config.tgc_ID'),
         nullable=False
     )
-    tgl_transaction_type = sa.Column(
-        'tgl_TransactionType', sa.Integer,
-        nullable=False
-    )
     tgl_user_id = sa.Column(
-        'tgl_UserID', sa.String(50),
+        'tgu_UserID', sa.String(50),
         sa.ForeignKey('TLG_Users.tgu_UserID')
     )
-    tgl_text = sa.Column(
-        'tgl_Text', sa.Text(4000)
+    tgl_user_text = sa.Column(
+        'tgl_UserText', sa.Text(4000)
+    )
+    tgl_error = sa.Column(
+        'tgl_Error', sa.Boolean,
+        default=False, nullable=False
     )
