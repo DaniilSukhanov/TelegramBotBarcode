@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 
 from data import const
-from utils.db_api.db_session import SqlAlchemyBase
+from data.db_class import SqlAlchemyBase
 
 
 class Users(SqlAlchemyBase):

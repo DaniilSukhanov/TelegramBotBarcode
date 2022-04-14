@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 import datetime
 
-from utils.db_api.db_session import SqlAlchemyBase
+from data.db_class import SqlAlchemyBase
 
 
 class Log(SqlAlchemyBase):

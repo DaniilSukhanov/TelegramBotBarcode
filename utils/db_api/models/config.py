@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 
-from utils.db_api.db_session import SqlAlchemyBase
+from data.db_class import SqlAlchemyBase
 
 
 class Config(SqlAlchemyBase):
@@ -14,7 +14,7 @@ class Config(SqlAlchemyBase):
     )
     tgc_bot_login = sa.Column(
         'tgc_BotLogin', sa.String(50),
-        nullable=False
+        nullable=False, primary_key=True
     )
     tgc_token = sa.Column(
         'tgc_Token', sa.String(50),

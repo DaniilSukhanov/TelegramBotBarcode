@@ -22,10 +22,7 @@ class LoginChecker(BaseMiddleware):
             handler, 'clearance_level', const.REGISTERED_USER
         )
         user_id = message.from_user.id
-        session = db.create_session()
-        user = session.query(models.Users).filter(
-            models.Users.tgu_user_id == str(user_id)
-        ).first()
+        user = db.get_user(str(user_id))
         prefix = ''
         if user is None:
             user_status = const.UNREGISTERED_USER

@@ -64,28 +64,8 @@ async def get_password(message: types.Message, state: FSMContext):
     ).first()[0]
     if password_system == password_user:
         await message.answer('Ваши данные вносятся в базу данных.')
-        phone_number = (await state.get_data()).get('phone_number')
-        await state.finish()
-        tlg_user = message.from_user
-        logging.info(
-            f'Started adding the user {tlg_user.username} to the database.'
-        )
-        bot_id = session.query(models.Config.tgc_id).filter(
-            models.Config.tgc_bot_login == bot_me.username
-        ).first()[0]
-        new_user = models.Users()
-        new_user.tgu_user_id = str(tlg_user.id)
-        new_user.tgu_name = tlg_user.first_name
-        new_user.tgu_surname = tlg_user.last_name
-        new_user.tgu_phone = phone_number
-        new_user.tgu_login = tlg_user.username
-        new_user.tgu_chat_id = message.chat.id
-        new_user.tgu_bot_id = bot_id
-        session.add(new_user)
-        session.commit()
-        logging.info(
-            f'The user {tlg_user.username} has been added to the database.'
-        )
+        await db.add_user(message, state)
         await message.answer('Регистрация прошла успешно.')
     else:
         await message.answer('Неправильный пароль')
+    await state.finish()
