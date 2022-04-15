@@ -94,6 +94,14 @@ class DataBase:
             f'The user {tlg_user.username} has been added to the database.'
         )
 
+    def get_data_barcode(self, barcode: str) -> str:
+        session = self.create_session()
+        data = session.execute(
+            config.DATA_REQUEST,
+            {'insert': barcode}
+        ).first()
+        return config.RESPONSE_TEMPLATE.format(*data)
+
 
 if __name__ == '__main__':
     DataBase()

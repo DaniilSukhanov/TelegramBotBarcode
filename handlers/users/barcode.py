@@ -5,7 +5,11 @@ import PIL
 
 from loader import dp, bot
 from data.decode import decode_image
+from utils.db_api.db_session import DataBase
 from utils.misc import clearance_level
+
+
+db = DataBase()
 
 
 @clearance_level()
@@ -18,7 +22,10 @@ async def decode_photo(message: types.Message):
         data_barcode = decode_image(bytes_file)
         logging.info('Image decoded successfully.')
         logging.debug(f'Image decoded: {data_barcode}')
-        await message.answer(data_barcode)
+        await message.answer(db.get_data_barcode(data_barcode))
+    except TypeError:
+        logging.info('Incorrect barcode.')
+        await message.answer('Такой штрих-код не был найден в базе данных')
     except PIL.UnidentifiedImageError:
         logging.info('Images are not the correct format.')
         await message.answer(

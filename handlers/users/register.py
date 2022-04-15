@@ -21,12 +21,16 @@ db = DataBase()
 @dp.message_handler(Command('register'))
 async def register(message: types.Message):
     """Ввод пользователя в состояние регистрации."""
-    await message.answer(
-        'Началась регистрация.\n'
-        'Поделитесь своим номером телефона с ботом.',
-        reply_markup=keyboard_getter_contact
-    )
-    await Register.phone_number.set()
+    user = db.get_user(message.from_user.id)
+    if user is None:
+        await message.answer(
+            'Началась регистрация.\n'
+            'Поделитесь своим номером телефона с ботом.',
+            reply_markup=keyboard_getter_contact
+        )
+        await Register.phone_number.set()
+    else:
+        await message.answer('Вы уже зарегистрировались.')
 
 
 @clearance_level(const.UNREGISTERED_USER)
