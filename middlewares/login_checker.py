@@ -22,7 +22,7 @@ class LoginChecker(BaseMiddleware):
             handler, 'clearance_level', const.REGISTERED_USER
         )
         user_id = message.from_user.id
-        user = db.get_user(str(user_id))
+        user = await db.get_user(str(user_id))
         prefix = ''
         if user is None:
             user_status = const.UNREGISTERED_USER

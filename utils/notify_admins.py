@@ -10,7 +10,7 @@ db = DataBase()
 
 
 async def on_startup_notify(dp: Dispatcher):
-    admins = db.get_admins()
+    admins = await db.get_admins()
     for admin in admins:
         try:
             await dp.bot.send_message(admin.tgu_chat_id, "Бот Запущен")

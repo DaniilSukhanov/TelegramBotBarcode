@@ -22,7 +22,8 @@ async def decode_photo(message: types.Message):
         data_barcode = decode_image(bytes_file)
         logging.info('Image decoded successfully.')
         logging.debug(f'Image decoded: {data_barcode}')
-        await message.answer(db.get_data_barcode(data_barcode))
+        barcode_data = await db.get_data_barcode(data_barcode)
+        await message.answer(barcode_data)
     except TypeError:
         logging.info('Incorrect barcode.')
         await message.answer('Такой штрих-код не был найден в базе данных')

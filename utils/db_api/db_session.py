@@ -38,68 +38,80 @@ class DataBase:
             logging.info('Database connection was successful.')
         return super().__new__(cls)
 
+    def get_token(self, bot_login: str) -> str:
+        """Возвращает токен бота."""
+        with self.create_session() as session:
+            token = session.query(
+                models.Config.tgc_token
+            ).filter(models.Config.tgc_bot_login == bot_login).first()[0]
+        return token
+
     def create_session(self) -> Session:
         """Создает новую сессию."""
         return self.__factory()
 
-    def get_config(self, login: str) -> models.Config:
+    async def get_config(self, login: str) -> models.Config:
         """Получить конфиг по логину бота."""
-        session = self.create_session()
-        db_config = session.query(models.Config).filter(
-            models.Config.tgc_bot_login == login
-        ).first()
+        with self.create_session() as session:
+            db_config = session.query(models.Config).filter(
+                models.Config.tgc_bot_login == login
+            ).first()
         if db_config is None:
             raise ValueError(
                 'Failed to get config. An invalid username was passed.'
             )
         return db_config
 
-    def get_admins(self) -> List[models.Users]:
+    async def get_admins(self) -> List[models.Users]:
         """Получить всех администраторов."""
-        session = self.create_session()
-        admins = session.query(models.Users).filter(
-            models.Users.tgu_user_status == const.ADMIN
-        ).all()
+        with self.create_session() as session:
+            admins = session.query(models.Users).filter(
+                models.Users.tgu_user_status == const.ADMIN
+            ).all()
         return admins
 
-    def get_user(self, user_id: str) -> models.Users:
-        session = self.create_session()
-        user = session.query(models.Users).filter(
-            models.Users.tgu_user_id == user_id
-        ).first()
+    async def get_user(self, user_id: str) -> models.Users:
+        """Получение пользователя по его id (telegram)."""
+        with self.create_session() as session:
+            user = session.query(models.Users).filter(
+                models.Users.tgu_user_id == user_id
+            ).first()
         return user
 
     async def add_user(self, message: types.Message, state: FSMContext):
-        session = self.create_session()
+        """Добавляет пользователя в базу данных."""
         tlg_user = message.from_user
-        logging.info(
-            f'Started adding the user {tlg_user.username} to the database.'
-        )
         bot_me = await message.bot.get_me()
         phone_number = (await state.get_data()).get('phone_number')
-        bot_db = session.query(models.Config.tgc_id).filter(
-            models.Config.tgc_bot_login == bot_me.username
-        ).first()[0]
-        new_user = models.Users()
-        new_user.tgu_user_id = str(tlg_user.id)
-        new_user.tgu_name = tlg_user.first_name
-        new_user.tgu_surname = tlg_user.last_name
-        new_user.tgu_phone = phone_number
-        new_user.tgu_login = tlg_user.username
-        new_user.tgu_chat_id = message.chat.id
-        new_user.tgu_bot = bot_db
-        session.add(new_user)
-        session.commit()
-        logging.info(
-            f'The user {tlg_user.username} has been added to the database.'
-        )
+        with self.create_session() as session:
+            bot_db = session.query(models.Config.tgc_id).filter(
+                models.Config.tgc_bot_login == bot_me.username
+            ).first()[0]
+            logging.info(
+                f'Started adding the user {tlg_user.username} to the database.'
+            )
+            new_user = models.Users()
+            new_user.tgu_user_id = str(tlg_user.id)
+            new_user.tgu_name = tlg_user.first_name
+            new_user.tgu_surname = tlg_user.last_name
+            new_user.tgu_phone = phone_number
+            new_user.tgu_login = tlg_user.username
+            new_user.tgu_chat_id = message.chat.id
+            new_user.tgu_bot = bot_db
+            session.add(new_user)
+            session.commit()
+            logging.info(
+                f'The user {tlg_user.username} has been added to the database.'
+            )
 
-    def get_data_barcode(self, barcode: str) -> str:
-        session = self.create_session()
-        data = session.execute(
-            config.DATA_REQUEST,
-            {'insert': barcode}
-        ).first()
+    async def get_data_barcode(self, barcode: str) -> str:
+        """Получает данные из базы данных по штрих-коду и поставляет их
+         в шаблон"""
+        with self.create_session() as session:
+            data = session.execute(
+                config.DATA_REQUEST,
+                {'insert': barcode}
+            ).first()
         return config.RESPONSE_TEMPLATE.format(*data)
 
 

@@ -21,7 +21,7 @@ db = DataBase()
 @dp.message_handler(Command('register'))
 async def register(message: types.Message):
     """Ввод пользователя в состояние регистрации."""
-    user = db.get_user(message.from_user.id)
+    user = await db.get_user(message.from_user.id)
     if user is None:
         await message.answer(
             'Началась регистрация.\n'
@@ -60,13 +60,10 @@ async def get_phone_number(message: types.Message, state: FSMContext):
 )
 async def get_password(message: types.Message, state: FSMContext):
     """Получение пароля для регистрации."""
-    session = db.create_session()
     password_user = message.text
     bot_me = await bot.get_me()
-    password_system = session.query(models.Config.tgc_password).filter(
-        models.Config.tgc_bot_login == bot_me.username
-    ).first()[0]
-    if password_system == password_user:
+    password_bot = (await db.get_config(bot_me.username)).tgc_password
+    if password_bot == password_user:
         await message.answer('Ваши данные вносятся в базу данных.')
         await db.add_user(message, state)
         await message.answer('Регистрация прошла успешно.')
