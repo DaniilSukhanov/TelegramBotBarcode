@@ -38,6 +38,22 @@ class DataBase:
             logging.info('Database connection was successful.')
         return super().__new__(cls)
 
+    def update_errors(self):
+        """Обновляет значения ошибок в таблице."""
+        with self.create_session() as session:
+            logging.info('Errors update started.')
+            for error_id, text_id in const.ERRORS.items():
+                db_error = session.query(models.Errors).filter(
+                    models.Errors.tge_id == error_id
+                ).first()
+                if db_error is None:
+                    error = models.Errors()
+                    error.tge_id = error_id
+                    error.tge_text = text_id
+                    session.add(error)
+            session.commit()
+            logging.info('Errors update finished.')
+
     def get_token(self, bot_login: str) -> str:
         """Возвращает токен бота."""
         with self.create_session() as session:
@@ -113,6 +129,18 @@ class DataBase:
                 {'insert': barcode}
             ).first()
         return config.RESPONSE_TEMPLATE.format(*data)
+
+    async def create_log_entry(self, message: types.Message, error: int):
+        """Добавляет запись в лог."""
+        with self.create_session() as session:
+            config_db = await self.get_config(config.BOT_LOGIN)
+            log = models.Log()
+            log.tgl_error = error
+            log.tgl_user_id = message.from_user.id
+            log.tgl_user_text = message.text
+            log.tgl_bot = config_db.tgc_id
+            session.add(log)
+            session.commit()
 
 
 if __name__ == '__main__':

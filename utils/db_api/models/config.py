@@ -14,7 +14,7 @@ class Config(SqlAlchemyBase):
     )
     tgc_bot_login = sa.Column(
         'tgc_BotLogin', sa.String(50),
-        nullable=False, primary_key=True
+        nullable=False
     )
     tgc_token = sa.Column(
         'tgc_Token', sa.String(50),
@@ -44,3 +44,4 @@ class Config(SqlAlchemyBase):
     tgc_proxy_exp_send_to_user_id = sa.Column(
         'tgc_ProxyExpSendToUserID', sa.Integer
     )
+

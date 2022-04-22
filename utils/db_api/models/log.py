@@ -28,9 +28,10 @@ class Log(SqlAlchemyBase):
         sa.ForeignKey('TLG_Users.tgu_UserID')
     )
     tgl_user_text = sa.Column(
-        'tgl_UserText', sa.Text(4000)
+        'tgl_UserText', sa.Text(4096)
     )
     tgl_error = sa.Column(
-        'tgl_Error', sa.Boolean,
+        'tgl_Error', sa.Integer,
+        sa.ForeignKey('TLG_Errors.tge_ID'),
         default=False, nullable=False
     )

@@ -26,19 +26,23 @@ async def decode_photo(message: types.Message):
         await message.answer(barcode_data)
     except TypeError:
         logging.info('Incorrect barcode.')
+        await db.create_log_entry(message, 2)
         await message.answer('Такой штрих-код не был найден в базе данных')
     except PIL.UnidentifiedImageError:
         logging.info('Images are not the correct format.')
+        await db.create_log_entry(message, 4)
         await message.answer(
             'Неправильный формат изображения.'
         )
     except IndexError:
         logging.info('Barcode on image not found.')
+        await db.create_log_entry(message, 2)
         await message.answer(
             'Штрих-код не найден.'
         )
     except exceptions.FileIsTooBig:
         logging.info('File is too big.')
+        await db.create_log_entry(message, 3)
         await message.answer(
             'Файл слишком большой.'
         )
