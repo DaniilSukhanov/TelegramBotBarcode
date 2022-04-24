@@ -32,6 +32,8 @@ class Log(SqlAlchemyBase):
     )
     tgl_error = sa.Column(
         'tgl_Error', sa.Integer,
-        sa.ForeignKey('TLG_Errors.tge_ID'),
-        default=False, nullable=False
+        sa.ForeignKey('TLG_Errors.tge_ID')
+    )
+    tgl_photo = sa.Column(
+        'tgl_Photo', sa.String(250)
     )

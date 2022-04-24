@@ -31,10 +31,10 @@ class DataBase:
             engine = sa.create_engine(conn_str, echo=False)
             engine.connect()
             cls.__factory = orm.sessionmaker(bind=engine)
+            if config.CREATE_START_DATA:
+                from data.db_class import SqlAlchemyBase
 
-            from data.db_class import SqlAlchemyBase
-
-            SqlAlchemyBase.metadata.create_all(engine)
+                SqlAlchemyBase.metadata.create_all(engine)
             logging.info('Database connection was successful.')
         return super().__new__(cls)
 
@@ -130,7 +130,10 @@ class DataBase:
             ).first()
         return config.RESPONSE_TEMPLATE.format(*data)
 
-    async def create_log_entry(self, message: types.Message, error: int):
+    async def create_log_entry(
+            self, message: types.Message, error: int = None,
+            path_photo: str = None
+    ):
         """Добавляет запись в лог."""
         with self.create_session() as session:
             config_db = await self.get_config(config.BOT_LOGIN)
@@ -139,6 +142,7 @@ class DataBase:
             log.tgl_user_id = message.from_user.id
             log.tgl_user_text = message.text
             log.tgl_bot = config_db.tgc_id
+            log.tgl_photo = path_photo
             session.add(log)
             session.commit()
 
