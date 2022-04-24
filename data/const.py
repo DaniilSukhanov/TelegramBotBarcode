@@ -5,5 +5,6 @@ ERRORS = {
     1: 'Invalid barcode.',
     2: 'Barcode not found.',
     3: 'File is too big.',
-    4: 'Wrong image format.'
+    4: 'Wrong image format.',
+    5: 'Low rights.'
 }
