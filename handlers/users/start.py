@@ -1,9 +1,12 @@
 from aiogram import types
 from aiogram.dispatcher.filters.builtin import CommandStart
 
-from loader import dp
+from data import const
+from loader import dp, bot
+from utils.misc import clearance_level
 
 
+@clearance_level(const.UNREGISTERED_USER)
 @dp.message_handler(CommandStart())
 async def bot_start(message: types.Message):
-    await message.answer(f"Привет, {message.from_user.full_name}!")
+    await message.answer(f"Привет, {message.from_user.username}")
