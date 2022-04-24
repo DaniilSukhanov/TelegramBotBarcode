@@ -6,7 +6,7 @@ from aiogram import types
 from utils.db_api.db_session import DataBase
 from utils.db_api import models
 from utils import misc
-from data import const
+from data import const, exceptions
 
 
 db = DataBase()
@@ -23,13 +23,10 @@ class LoginChecker(BaseMiddleware):
         )
         user_id = message.from_user.id
         user = await db.get_user(str(user_id))
-        prefix = ''
         if user is None:
             user_status = const.UNREGISTERED_USER
-            prefix = '\nзарегистрируйтесь (/register).'
         else:
             user_status = user.tgu_user_status
         if clearance_level_handler > user_status:
-            await message.answer('Вы не обладаете нужными правами.' + prefix)
-            raise CancelHandler()
+            raise exceptions.LowLevelPermission()
 

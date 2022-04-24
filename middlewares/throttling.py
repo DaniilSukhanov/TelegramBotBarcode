@@ -6,6 +6,8 @@ from aiogram.dispatcher.handler import CancelHandler, current_handler
 from aiogram.dispatcher.middlewares import BaseMiddleware
 from aiogram.utils.exceptions import Throttled
 
+from data import exceptions
+
 
 class ThrottlingMiddleware(BaseMiddleware):
     """
@@ -31,10 +33,5 @@ class ThrottlingMiddleware(BaseMiddleware):
             await dispatcher.throttle(key, rate=limit)
         except Throttled as t:
             if t.exceeded_count >= 2:
-                await message.reply(
-                    "Вы слишком часто оправляете сообщения!\n"
-                    "Следующее сообщение можно отправить через "
-                    f"{round(limit - t.delta, 2)} секунд."
-                )
-            raise CancelHandler()
+                raise exceptions.Spam()
 

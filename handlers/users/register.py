@@ -64,9 +64,10 @@ async def get_password(message: types.Message, state: FSMContext):
     bot_me = await bot.get_me()
     password_bot = (await db.get_config(bot_me.username)).tgc_password
     if password_bot == password_user:
+        await state.finish()
         await message.answer('Ваши данные вносятся в базу данных.')
         await db.add_user(message, state)
         await message.answer('Регистрация прошла успешно.')
     else:
         await message.answer('Неправильный пароль')
-    await state.finish()
+

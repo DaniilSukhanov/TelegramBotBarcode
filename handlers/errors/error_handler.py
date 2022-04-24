@@ -1,43 +1,92 @@
 import logging
+
+import PIL
+from aiogram.types import Update
+from sqlalchemy.exc import ProgrammingError
 from aiogram.utils.exceptions import (TelegramAPIError,
                                       MessageNotModified,
                                       CantParseEntities, CantDemoteChatCreator,
                                       MessageCantBeDeleted,
                                       MessageToDeleteNotFound,
                                       MessageTextIsEmpty, Unauthorized,
-                                      InvalidQueryID, RetryAfter)
+                                      InvalidQueryID, RetryAfter, FileIsTooBig)
 
 
 from loader import dp
+from data import exceptions
+from utils.db_api.db_session import DataBase
+
+db = DataBase()
 
 
 @dp.errors_handler()
 async def errors_handler(update, exception):
-    """
-    Exceptions handler. Catches all exceptions within task factory tasks.
-    :param dispatcher:
-    :param update:
-    :param exception:
-    :return: stdout logging
-    """
+    """Обработчик ошибок."""
+    message = Update.get_current().message
+
+    if isinstance(exception, exceptions.NotFoundBarcode):
+        logging.info('Barcode on image not found.')
+        await db.create_log_entry(message, 2)
+        await message.answer(
+            'Штрих-код не найден.'
+        )
+        return True
+
+    if isinstance(exception, ProgrammingError):
+        logging.error(f'Incorrect sql query: {exception}')
+        await message.answer('Не удалось запросить данные.')
+        return True
+
+    if isinstance(exception, exceptions.InvalidTypeInsert):
+        logging.error(f'Incorrect sql query: {exception}')
+        await message.answer('Не удалось запросить данные.')
+        return True
+
+    if isinstance(exception, exceptions.LowLevelPermission):
+        await message.answer('Вы не обладаете нужными правами.')
+        await db.create_log_entry(message, 5)
+        return True
+
+    if isinstance(exception, exceptions.Spam):
+        await message.answer('Вы слишком часто пишите.')
+        return True
+
+    if isinstance(exception, PIL.UnidentifiedImageError):
+        logging.info('Images are not the correct format.')
+        await db.create_log_entry(message, 4)
+        await message.answer(
+            'Неправильный формат изображения.'
+        )
+        return True
+
+    if isinstance(exception, exceptions.UnknownBarcode):
+        logging.info('Incorrect barcode.')
+        await db.create_log_entry(message, 2)
+        await message.answer('Такой штрих-код не был найден в базе данных')
+        return True
+
+    if isinstance(exception, FileIsTooBig):
+        logging.info('File is too big.')
+        await db.create_log_entry(message, 3)
+        await message.answer(
+            'Файл слишком большой.'
+        )
+        return True
 
     if isinstance(exception, CantDemoteChatCreator):
         logging.exception("Can't demote chat creator")
-        # do something here?
         return True
 
     if isinstance(exception, MessageNotModified):
         logging.exception('Message is not modified')
-        # or here
         return True
+
     if isinstance(exception, MessageCantBeDeleted):
         logging.exception('Message cant be deleted')
-        # or here
         return True
 
     if isinstance(exception, MessageToDeleteNotFound):
         logging.exception('Message to delete not found')
-        # well, you know.
         return True
 
     if isinstance(exception, MessageTextIsEmpty):
@@ -59,11 +108,9 @@ async def errors_handler(update, exception):
     if isinstance(exception, CantParseEntities):
         logging.exception(f'CantParseEntities: {exception} \nUpdate: {update}')
         return True
-      
-    #  MUST BE THE  LAST CONDITION (ЭТО УСЛОВИЕ ВСЕГДА ДОЛЖНО БЫТЬ В КОНЦЕ)
+
     if isinstance(exception, TelegramAPIError):
         logging.exception(f'TelegramAPIError: {exception} \nUpdate: {update}')
         return True
-    
-    # At least you have tried.
+
     logging.exception(f'Update: {update} \n{exception}')

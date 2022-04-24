@@ -8,7 +8,8 @@ from aiogram.dispatcher import FSMContext
 from sqlalchemy.orm import Session
 from data import config
 from utils.db_api import models
-from data import const
+from data import const, exceptions
+from data.exceptions import UnknownBarcode
 
 
 class DataBase:
@@ -124,10 +125,21 @@ class DataBase:
         """Получает данные из базы данных по штрих-коду и поставляет их
          в шаблон"""
         with self.create_session() as session:
+            session.begin()
+            if config.TYPE_INSERT == 'str':
+                insert_barcode = barcode
+            elif config.TYPE_INSERT == 'int':
+                insert_barcode = int(barcode)
+            else:
+                raise exceptions.InvalidTypeInsert(
+                    f'Type insert: str, int (not {config.TYPE_INSERT}).'
+                )
             data = session.execute(
                 config.DATA_REQUEST,
-                {'insert': barcode}
+                {'insert': insert_barcode}
             ).first()
+            if data is None:
+                raise UnknownBarcode()
         return config.RESPONSE_TEMPLATE.format(*data)
 
     async def create_log_entry(
