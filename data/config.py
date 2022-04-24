@@ -4,7 +4,13 @@ from environs import Env
 env = Env()
 env.read_env()
 
-BOT_TOKEN = env.str("BOT_TOKEN")  # Забираем значение типа str
-ADMINS = env.list("ADMINS")  # Тут у нас будет список из админов
-IP = env.str("ip")  # Тоже str, но для айпи адреса хоста
-
+USER_DB = env.str('USER_DB')
+USER_DB_PASSWORD = env.str('USER_DB_PASSWORD')
+HOST_DB = env.str('HOST_DB')
+DB_NAME = env.str('DB_NAME')
+DB_DRIVER = env.str('DB_DRIVER')
+BOT_LOGIN = env.str('BOT_LOGIN')
+DATA_REQUEST = env.str('DATA_REQUEST')
+RESPONSE_TEMPLATE = env.str('RESPONSE_TEMPLATE')
+CREATE_START_DATA = env.bool('CREATE_START_DATA')
+TYPE_INSERT = env.str('TYPE_INSERT')

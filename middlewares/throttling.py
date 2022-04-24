@@ -15,6 +15,7 @@ class ThrottlingMiddleware(BaseMiddleware):
     def __init__(self, limit=DEFAULT_RATE_LIMIT, key_prefix='antiflood_'):
         self.rate_limit = limit
         self.prefix = key_prefix
+
         super(ThrottlingMiddleware, self).__init__()
 
     async def on_process_message(self, message: types.Message, data: dict):
@@ -29,9 +30,11 @@ class ThrottlingMiddleware(BaseMiddleware):
         try:
             await dispatcher.throttle(key, rate=limit)
         except Throttled as t:
-            await self.message_throttled(message, t)
+            if t.exceeded_count >= 2:
+                await message.reply(
+                    "Вы слишком часто оправляете сообщения!\n"
+                    "Следующее сообщение можно отправить через "
+                    f"{round(limit - t.delta, 2)} секунд."
+                )
             raise CancelHandler()
 
-    async def message_throttled(self, message: types.Message, throttled: Throttled):
-        if throttled.exceeded_count <= 2:
-            await message.reply("Too many requests!")
