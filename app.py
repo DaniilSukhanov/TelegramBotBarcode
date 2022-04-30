@@ -1,11 +1,14 @@
 from aiogram import executor
 
+
+from utils.misc import logging
+from data import config
 from loader import dp
+
 import middlewares, filters, handlers
 from utils.notify_admins import on_startup_notify
 from utils.set_bot_commands import set_default_commands
 from utils.db_api.db_session import DataBase
-from data import config
 
 
 async def on_startup(dispatcher):

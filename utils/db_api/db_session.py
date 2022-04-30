@@ -35,7 +35,6 @@ class DataBase:
             cls.__factory = orm.sessionmaker(bind=engine)
             if config.CREATE_START_DATA:
                 from data.db_class import SqlAlchemyBase
-
                 SqlAlchemyBase.metadata.create_all(engine)
             logging.info('Database connection was successful.')
         return super().__new__(cls)
@@ -92,7 +91,7 @@ class DataBase:
         """Получение пользователя по его id (telegram)."""
         with self.create_session() as session:
             user = session.query(models.Users).filter(
-                models.Users.tgu_user_id == user_id
+                models.Users.tgu_user_id == str(user_id)
             ).first()
         return user
 
@@ -126,11 +125,13 @@ class DataBase:
         """Получает данные из базы данных по штрих-коду и поставляет их
          в шаблон"""
         with self.create_session() as session:
-            session.begin()
             if config.TYPE_INSERT == 'str':
                 insert_barcode = barcode
             elif config.TYPE_INSERT == 'int':
-                insert_barcode = int(barcode)
+                try:
+                    insert_barcode = int(barcode)
+                except ValueError:
+                    raise exceptions.UnknownBarcode()
             else:
                 raise exceptions.InvalidTypeInsert(
                     f'Type insert: str, int (not {config.TYPE_INSERT}).'

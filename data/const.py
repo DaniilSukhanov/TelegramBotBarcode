@@ -8,3 +8,5 @@ ERRORS = {
     4: 'Wrong image format.',
     5: 'Low rights.'
 }
+PATH_DIRECTORY_ENV = '/Users/daniilsuhanov/PycharmProjects/' \
+                     'TelegramBotBarcode/dist'
