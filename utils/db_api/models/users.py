@@ -1,3 +1,5 @@
+import datetime
+
 import sqlalchemy as sa
 
 from data import const
@@ -35,4 +37,8 @@ class Users(SqlAlchemyBase):
     tgu_user_status = sa.Column(
         'tgu_UserStatus', sa.Integer,
         default=const.REGISTERED_USER
+    )
+    tgu_date_registration = sa.Column(
+        'tgu_DateRegistration', sa.DateTime,
+        default=datetime.datetime.now
     )

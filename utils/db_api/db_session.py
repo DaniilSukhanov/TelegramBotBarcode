@@ -1,4 +1,4 @@
-
+import datetime
 import logging
 from typing import List
 
@@ -35,9 +35,27 @@ class DataBase:
             cls.__factory = orm.sessionmaker(bind=engine)
             if config.CREATE_START_DATA:
                 from data.db_class import SqlAlchemyBase
+
                 SqlAlchemyBase.metadata.create_all(engine)
             logging.info('Database connection was successful.')
         return super().__new__(cls)
+
+    async def get_new_users(self) -> int:
+        date = datetime.datetime.now()
+
+        with self.create_session() as session:
+            session: Session
+            count_new_users = session.query(models.Users).filter(
+                models.Users.tgu_date_registration.between(
+                    datetime.datetime(
+                        year=date.year, month=date.month, day=date.day,
+                    ), datetime.datetime(
+                        year=date.year, month=date.month, day=date.day,
+                        hour=23, minute=59, second=59
+                    )
+                )
+            ).count()
+        return count_new_users
 
     def update_errors(self):
         """Обновляет значения ошибок в таблице."""
@@ -95,11 +113,11 @@ class DataBase:
             ).first()
         return user
 
-    async def add_user(self, message: types.Message, state: FSMContext):
+    async def add_user(self, message: types.Message, data: dict):
         """Добавляет пользователя в базу данных."""
         tlg_user = message.from_user
         bot_me = await message.bot.get_me()
-        phone_number = (await state.get_data()).get('phone_number')
+        phone_number = data['phone_number']
         with self.create_session() as session:
             bot_db = session.query(models.Config.tgc_id).filter(
                 models.Config.tgc_bot_login == bot_me.username
