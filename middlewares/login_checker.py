@@ -13,6 +13,8 @@ db = DataBase()
 
 
 class LoginChecker(BaseMiddleware):
+    """Фильтрует сообщение, отправление пользователями,
+    которые не обладают нужными правами."""
     @staticmethod
     async def on_process_message(message: types.Message, data: dict):
         handler = current_handler.get()

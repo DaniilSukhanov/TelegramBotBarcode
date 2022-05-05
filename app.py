@@ -2,6 +2,9 @@ import datetime
 
 from aiogram import executor
 
+import logging as lg
+
+from aiogram.utils.exceptions import Unauthorized
 
 from utils.misc import logging
 from data import config
@@ -29,5 +32,9 @@ async def on_startup(dispatcher):
 
 
 if __name__ == '__main__':
-    executor.start_polling(dp, on_startup=on_startup)
-
+    try:
+        executor.start_polling(dp, on_startup=on_startup)
+    except Unauthorized:
+        lg.error('Invalid token.')
+    except Exception as error:
+        lg.error(f'Error: {error}.')

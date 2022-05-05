@@ -5,7 +5,6 @@ from typing import List
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from aiogram import types
-from aiogram.dispatcher import FSMContext
 from sqlalchemy.orm import Session
 from data import config
 from utils.db_api import models

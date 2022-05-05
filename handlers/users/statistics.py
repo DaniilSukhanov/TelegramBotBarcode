@@ -5,7 +5,7 @@ from data import const
 from loader import dp
 from utils.db_api import models
 from utils.db_api.db_session import DataBase
-from utils.misc import clearance_level
+from utils.misc import clearance_level, rate_limit
 
 
 db = DataBase()

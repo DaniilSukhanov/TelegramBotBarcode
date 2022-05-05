@@ -10,6 +10,7 @@ db = DataBase()
 
 
 async def on_startup_notify(dp: Dispatcher):
+    """Присылает сообщение админам о начале работы бота."""
     admins = await db.get_admins()
     for admin in admins:
         try:

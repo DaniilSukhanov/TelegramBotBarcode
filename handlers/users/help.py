@@ -9,7 +9,12 @@ from utils.misc.middleware_status_setters import clearance_level
 @clearance_level(const.UNREGISTERED_USER)
 @dp.message_handler(CommandHelp())
 async def bot_help(message: types.Message):
-    text = ("Список команд: ",
-            "/start - Начать диалог",
-            "/help - Получить справку")
+    """Команда help."""
+    text = (
+        "Список команд: ",
+        "/start - Начать диалог",
+        "/help - Получить справку",
+        '/register - зарегистрироваться',
+        '/statistics - получить статистику'
+    )
     await message.answer("\n".join(text))

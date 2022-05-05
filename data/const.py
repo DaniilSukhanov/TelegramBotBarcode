@@ -8,5 +8,6 @@ ERRORS = {
     4: 'Wrong image format.',
     5: 'Low rights.'
 }
+# Требуется изменить, если рабочая директория определяется неверно.
 PATH_DIRECTORY_ENV = '/Users/daniilsuhanov/PycharmProjects/' \
                      'TelegramBotBarcode/dist'

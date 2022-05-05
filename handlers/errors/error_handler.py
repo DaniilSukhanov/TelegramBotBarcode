@@ -2,7 +2,7 @@ import logging
 
 import PIL
 from aiogram.types import Update
-from sqlalchemy.exc import ProgrammingError
+from sqlalchemy.exc import ProgrammingError, DataError
 from aiogram.utils.exceptions import (TelegramAPIError,
                                       MessageNotModified,
                                       CantParseEntities, CantDemoteChatCreator,
@@ -28,8 +28,13 @@ async def errors_handler(update, exception):
         logging.info('Barcode on image not found.')
         await db.create_log_entry(message, 2)
         await message.answer(
-            'Штрих-код не найден.'
+            'Штрих-код не найден на изображении.'
         )
+        return True
+
+    if isinstance(exception, DataError):
+        logging.error('Invalid barcode data type.')
+        await message.answer('Неправильный тип данных штрих-кода.')
         return True
 
     if isinstance(exception, ProgrammingError):

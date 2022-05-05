@@ -5,7 +5,7 @@ import logging
 
 from data import const
 
-
+# Получения пути к env.
 path = os.path.join(
     os.getcwd(), '.env'
 )
